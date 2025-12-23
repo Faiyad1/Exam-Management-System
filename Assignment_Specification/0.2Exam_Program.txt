@@ -1,0 +1,219 @@
+Exam Program
+At the end of this assignment, you should have a program allowing students like yourself to complete an online exam. The exam can contain multiple-choice questions (single or multiple answers) and short answer questions (numerical or text). The user interface of the program is text-based. In short, students have to type in commands into the terminal instead of 'point and click'. 
+
+Command Line Arguments
+The program expects the administrator to provide the details of the exam to the program, in the order of appearance, as command line arguments:
+
+An absolute path to the directory containing two files - an exam contents and a student list file. The files in this directory must be correctly labeled. See below for File Formats.
+
+A number indicating the duration of the exam in minutes (as an integer).
+
+[optional] A flag -r to indicate that the answers are to be shuffled. If this is not provided, the answers are displayed as-is. 
+
+If more command line arguments are supplied than needed, the program will ignore the remaining arguments. If users do not provide sufficient arguments during the running of the program, the program will display the message Check command line arguments to the terminal and it terminates.
+
+The content of Week 6 is required for this part of the assignment.
+
+File Formats
+The program expects the exam contents and student list to be provided by the administrator in files labeled as follows:
+
+questions.txt to denote this as the file containing the exam contents. 
+
+students.csv to denote this as the file containing the list of students registered for the exam.
+
+Additional files found in the directory are ignored. If any of these two files are not found, the program displays the message Missing files to the terminal and it terminates. 
+
+questions.txt
+The program must parse the file to extract these fields for each question:
+
+Type : data representing the question type. This is case-insensitive and can take on these three values: short, single or multiple.
+
+Question : data representing the question itself. 
+
+Possible Answers : data representing the answer options that candidates can choose from when it is a multiple-choice question. It is restricted to the choice of A, B, C, and D. The field should be set to None for short answer questions and must not be None for multiple-choice questions. Multiple answers must be separated by a comma.
+
+Expected answer: data representing the correct answer. This will be used by the auto-grader for marking. 
+
+Marks : data representing the total marks awarded for a question.
+
+To aid the program in parsing, administrators are advised to prepare each question in the file in this format:
+
+ Question - <type> 
+ <Question details>
+ Possible Answers: 
+ A. <Response>
+ B. <Response>
+ C. <Response>
+ D. <Response>
+ Expected Answer: <A|B|C|D|text|numerical>
+ Marks: <integer>
+
+The contents presentation must match the specified question type. These conditions must be fulfilled:
+
+If a question is a multiple choice question, either single or multiple answers, the field Possible Answers: must exist. The expected answer must be A, B, C, or D .
+
+If the question is of type multiple choice questions with a single answer, there must only be one expected answer. For those with multiple answers, the answers must be separated by a comma (,)
+
+Short-answer questions must not have Possible Answers following the Question field. 
+
+These are examples of content presentation for each question type:
+
+Single type question - single answer
+
+ Question - Single
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ Possible Answers: 
+ A. print(I love INFO1110)
+ B. print("I" "love" "INFO1110")
+ C. print("I love" "INFO1110")
+ D. print("I love INFO1110")
+ Expected Answer: D
+ Marks: 1
+
+Multiple choice questions - multiple answers
+
+ Question - Multiple
+ Select all the animals that are mammals:
+ Possible Answers: 
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Expected Answer: A, B
+ Marks: 2
+
+Short answer
+
+ Question - Short
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Expected Answer: "Bob"
+ Marks: 1
+
+The administrator may opt to prepare the file to contain a mixture of question types or all of the same type. The program must be able to differentiate this. The question numbering will be dependent on the presentation sequence of the question itself in the file. For example, the questions parsed from the file sample_types.txt will be viewed in the terminal in the following sequence by a candidate during the exam:
+
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print(I love INFO1110)
+ B. print("I" "love" "INFO1110")
+ C. print("I love" "INFO1110")
+ D. print("I love INFO1110")
+ Expected Answer: D
+ ​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Expected Answer: A, B
+ ​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Expected Answer: "Bob"
+ ​
+ -End-
+ ​
+
+
+These are some examples of invalid content presentation for each question type:
+
+Invalid number of answer options for Single question (can be too few or too many)
+
+Question - Single
+This question is based on the program below:
+*********************************
+# Start
+name = input("What's your name?: ")
+# End
+*********************************
+After running the program, you have keyed in "Bob" followed by the Enter key.
+What is the value stored in variable name?
+Possible Answers:
+A. print(I love INFO1110)
+B. print("I" "love" "INFO1110")
+C. print("I love" "INFO1110")
+Expected Answer: D
+Marks: 1
+
+Invalid Marks for Multiple question
+
+Question - Multiple
+Some question.
+Possible Answers:
+A. First Option
+B. Second Option
+C. Third Option
+D. Fourth Option
+Expected Answer: A, B, D
+Marks: -2
+
+Short question with answer options
+
+Question - Short
+How can you generate random numbers in python?
+Possible Answers:
+A. *Bob*
+B. "Bob"
+C. "BobEnter"
+D. Bob
+Expected Answer: random() function
+Marks: 1
+
+
+students.csv
+The list of students who will be sitting for the exam must be saved in a csv file with the following details:
+
+SID: represent the student's identification number
+
+Name: represents the student's full name
+
+Extra Time: represents additional time, in minutes, granted to the candidate. If additional time is granted, it must be a whole number. Else, it can be left as blank or 0.
+
+The first row is the header. Each row after that represents a candidate that will be doing the exam. 
+
+For example, this is the data in sample_shortlist.csv which contains the details for 5 candidates with 1 candidate is given an extra 10 minutes of time while the rest are not given additional time for the exam. 
+
+ SID,Name,Extra Time
+ 500010347,Damian Carroll,
+ 500594412,Morgan Valencia,10
+ 500622656,Tom Goldfinch,
+ 500685031,Lisbeth Todd,
+ 500498361,Todd Werner,
+The contents from Week 7 is required for this part of the assignment.
+
+Exam Process
+The program must support the entire examination process which covers these stages:
+
+Set up the exam. 
+
+Assign the exam to candidates. 
+
+Administer the exam and auto-marking.
+
+Your job is to write Python codes to support both administrators and candidates for each stage. 
+
+If files are not in this format, the program should terminate as it is not able to successfully complete process 1. Set up the exam. In other words, the other processes must not load.
+
+This part of the assignment requires all contents from Week 1 to Week 10.

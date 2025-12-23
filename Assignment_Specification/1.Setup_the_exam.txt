@@ -1,0 +1,359 @@
+1. Setup the exam
+How do we setup the exam?
+The exam contents must be loaded into the program using specially formatted files. See Exam Program - File Formats - questions.txt, for more information on this. At this stage, the program parses the question file to extract all the exam contents. An exam can only be set up if all questions in the file are complete i.e. all requested information as specified in Exam Program - File Formats for each question are present and successfully extracted by the program. 
+
+Once the exam is setup, administrators should can opt to preview the exam or continue on with the next stage of the process. The program will continue prompting user with this message Do you want to preview the exam [Y|N]?  until they enter N or n. If a response other than y/Y or n /N is given, the program will display Invalid command. before prompting for another input. If the exam is not setup correctly, the program must warn administrators of the problem and terminate with the error message Error setting up exam. See Program Execution below for an example of an unsuccessful setup.
+
+The module setup.py contains functions that will be used by the program to setup the exam, but we will get to that later.
+
+
+Let's begin to code...
+Question
+
+A class called Question should be implemented to represent a single question extracted from the file. This class must be written in question.py. A Question object must have the following attributes:
+
+qtype: A string representing the type of question. It will always be one of these values: single , multiple, short and end which represent questions of type multiple choice questions with single answer, multiple choice questions with multiple answers, short answer questions and the end of the exam respectively.
+
+description: A string representing the question description. This is what someone would read to be able to answer the question.
+
+answer_options: A list representing the possible answers for the questions of type single or multiple. A short question would have this attribute as an empty list.
+
+correct_answer: A string representing the expected answer response for the question description resulting in the response being marked correct. 
+
+For questions of type single, it will be a single option value (either A, B, C or D). 
+
+For questions of type multiple, it will be one of the following:
+
+A single option value (A, B, C or D).
+
+A comma separated string of option values (e.g. A, B, C).
+
+marks: An integer representing the amount of marks awarded to the question if a candidate gets the answer correct.
+
+A Question object will have the following setter and getter methods. The setter methods are defined to verify that the provided argument is a valid value or fulfils a set of given conditions before the values are assigned to the instance variables.
+
+__init__: A constructor which accepts one argument of type str representing the type of question. The type of question must be valid, else it will default to None. The default value for attributedescription, correct_answer and marks is None. Attribute answer_options has a default value of an empty list.
+
+set_type: The argument qt will only be assigned to the attribute if the argument is one of the given values: single , multiple, short or end. If the method successfully assigns the value instance variable, the method returns True, otherwise False.
+
+For set_description, if the question type is end, immediately return False.
+
+set_description: The argument desc will only be assigned to the attribute if the argument is of type str and is not an empty string. If the method successfully assigns the value instance variable, the method returns True, otherwise False.
+
+For set_correct_answer, if the question type is end, immediately return False.
+
+set_correct_answer: The argument ans will only be assigned to the attribute if the argument is of type str.
+
+For questions of type single, it must be a single option value (either A, B, C or D). 
+
+For questions of type multiple, the answer must either be a single option value (A, B, C or D), or a comma separated string of option values (e.g. A, B, C).
+
+For questions of type short, the answer can be anything.
+
+For set_correct_answer, if the method successfully assigns the value instance variable, the method returns True, otherwise False.
+
+For set_answer_options, if the question type is short or end, opts should be assigned to the attribute without any checks.
+
+set_answer_options: The argument opts will only be assigned to the attribute if  the argument is of type list and each element in this list is a tuple with two elements. The first element in the tuple represents the answer description as a str and the second element is a bool value that flags whether the answer description is correct (True) or incorrect (False). However, all flags should initially be False.
+Conditions for answer options to be valid (it should be checked in this order):
+
+The answer description must start with A., B., C. or D. .
+
+There should be 4 answer options in the order A, B, C, D.
+
+correct_answer is of str type.
+
+correct_answer has only one correct answer for a single type question.
+
+correct_answer has at least one correct answer for a multiple type question.
+
+If all above is valid, you'll then need to set the flags based on correct_answer so the answer options are correctly labelled as correct and incorrect (True and False).
+
+For set_answer_options, if the method successfully assigns the value instance variable, the method returns True, otherwise False.
+
+For set_marks, if the question type is end, immediately return False.
+
+set_marks: The argument mark will only be assigned to the attribute if the argument is of type int and is more than or equals to 0. The method returns True if the value is successfully assigned to the attribute. 
+
+For get_answer_option_descriptions, if the question type is short or end, you can return an empty string immediately.
+
+get_answer_option_descriptions: The method returns a string object representing all the answer descriptions available for students to select during the exam.
+
+
+A Question object has the following methods to help administrators setup the exam correctly:
+
+preview_question: The method returns a string object showing the full question as it would appear in the exam. If the question number is 0, replace with X.
+
+The method returns a string object formatted as follows:
+
+Question X - <Question type> Answer[<Marks>]
+<Question description>
+[Optional] <Answer Options>
+Expected Answer: <Correct Answer>
+Note that end questions will have a different way to preview (a much simpler one, just displays -End-).
+
+shuffle_answers: The method randomizes the order of the answer options for multiple choice questions. If the question doesn't have multiple choice questions, do not produce the order and return out early.
+
+You need to first implement the function generate_order which returns a list of 4 integers in a random order. 
+
+The integers should be between 0 and 3 inclusive to determine order.
+
+Numbers in the list should be unique e.g. [3,1,0,2] and NOT [3,2,1,3].
+
+You are required to use random.randint() to generate these numbers. Keep in mind that the number returned from this function is random, meaning the amount of times this function must be called to create the list of integers cannot be determined before runtime. 
+
+As example, the first time you run this program, you may only need to call this function 4 times for one question, but in the next run of your program, you may need to call this function 10 times for one question (you get some duplicates). If you get a number that's already in the list, it should be ignored. 
+
+The following is an example of randomisation when creating the list.
+[]
+random.randint() -> 1
+[1]
+random.randint() -> 2
+[1, 2]
+random.randint() -> 1
+[1, 2]
+random.randint() -> 0
+[1, 2, 0]
+random.randint() -> 1
+[1, 2, 0]
+random.randint() -> 3
+[1, 2, 0, 3]
+
+
+You need to call the generate_order function and use the returned list to update the following attributes:
+
+order of the answer options along with the boolean values.  
+
+correct answer.
+
+The UML class diagram for your class Question should look like this after implementation:
+
+
+Here is an example of some possible Question objects could look like just so you can get an idea.
+
+Please keep in mind that not every question will be exactly like this. The questions generated must be determined by the questions.txt file inside the directory given as a command line argument when starting the program.
+
+Single
+
+qtype:           'single'
+description:     '''Which of the following Python statements will display this message in the terminal?
+                 *********************************
+                 Terminal output:
+                 <Start>I love INFO1110<End>
+                 *********************************'''
+answer_options:  [('A. print(I love INFO1110)', False),
+                 ('B. print("I" "love" "INFO1110")', False),
+                 ('C. print("I love" "INFO1110")', False),
+                 ('D. print("I love INFO1110")'), True)]
+correct_answer:  'D'
+marks:           1
+
+Multiple
+
+qtype:          'multiple'
+description:    'Select all the animals that are mammals:'
+answer_options: [('A. whale', True),
+                ('B. dog', True),
+                ('C. fish', False),
+                ('D. frog', False)]
+correct_answer: 'A, B'
+marks:          2
+
+Short
+
+qtype:          'short'
+description:    '''This question is based on the program below:
+                *********************************
+                # Start 
+                name = input("What's your name?: ")
+                # End
+                *********************************
+                After running the program, you have keyed in "Bob" followed by the Enter key.
+                What is the value stored in variable name?'''
+answer_options: []
+correct_answer: '"Bob"'
+marks:          1
+
+Referring back to the multiple choice question above, let's have a look if we shuffled it using the shuffle_answers function. If generate_order returned [2, 3, 1, 0] as an example, the question would now look like this:
+
+qtype:          'multiple'
+description:    'Select all the animals that are mammals:'
+answer_options: [('A. fish', False),
+                ('B. frog', False),
+                ('C. dog', True),
+                ('D. whale', True)]
+correct_answer: 'C, D'
+marks:          2
+
+Notice only answer_options has had elements rearranged and correct_answers now has different options, the rest remains the same.
+
+
+Exam
+
+You will need to implement class Exam to represent the details of an exam. This class must be written in exam.py. An Exam object must have the following attributes:
+
+duration: An integer representing the total amount of time for candidates to do the exam.
+
+path_to_dir: A string representing the path to directory containing the files to setup the exam.
+
+shuffle: A Boolean value indicating if the shuffle mode should be activated (True) or not (False).
+
+exam_status: A Boolean value indicating if the exam is setup correctly. It will be True if the attribute questions contains a list of Question objects.
+
+questions: A list of Question object representing the questions in the exam.
+
+name: A string representing the name of the exam.
+
+An Exam object will have the following setter and getter methods. The setter methods are defined to verify that the provided argument is a valid value or fulfils a set of given conditions before the values are assigned to the instance variables.
+
+__init__: A constructor which accepts three arguments representing the values related to duration, directory path and shuffle flag. The exam_status is False and question is an empty list since there are no questions upon initialisation.
+
+set_name: It is assumed that the name of the exam is the same as the directory name (not the entire path, just the directory name). The name should not contain any whitespaces. If a whitespace is present, it should instead be converted to  _. This method will use the path parameter to get the directory path, in which we can then grab the directory name, perform the whitespace to _ conversion, then assign the value to the attribute. As example, if path is /home/exams/info1110 test, then name should be info1110_test.
+
+get_name: The method returns a string representing the name of the exam in upper case. However, the string returned must have spaces in replacement of _ e.g. if the name of the exam is info1110_test, then this method should return INFO1110 TEST.
+
+set_exam_status: The setter method toggles the attribute to True if questions is not an empty list.
+
+set_duration: The method receives a single argument of type int and this value will be assigned to duration if the value is more than 0.
+
+set_questions: The method assigns the argument to questions only if the list of question objects received successfully completes the exam. The method returns True to indicate that the value is assigned to questions successfully, else False. If the list is not a list instance, the function returns False with no output. An exam is complete if the conditions for each field described in Exam Program - File Formats is fulfilled and the last element in the list is of type end. The following error messages should be displayed to enable the exam administrator to troubleshoot problems in the question file input:
+
+Description or correct answer missing : This applies to all questions except for end and occurs when the question description and correct answer has the default value.
+
+Answer options incorrect quantity: This applies only to questions of type single or multiple and occurs when the answer options are expected but none or invalid quantity is given.
+
+Answer options should not exist: This applies only to questions of type short which should not have any answer options for candidates to choose from during the exam.
+
+End marker missing or invalid: This applies only to question of type end which should be the last element in the list and should have default values for all of its attributes.
+
+The instance method preview_exam is present to help administrators preview the entire exam to ensure that it is set up correctly. The method returns a string object formatted as follows:
+
+<Exam Name>
+Question <Question Number> - <Question type> Answer[<Marks>]
+<Question description>
+[Optional] <Answer Options>
+Expected Answer: <Correct Answer>
+
+Question <Question Number> - <Question type> Answer[<Marks>]
+<Question description>
+[Optional] <Answer Options>
+Expected Answer: <Correct Answer>
+
+-End-
+
+
+where <field>, represents the data for the given question and exam. There must be a single line between each question. See Program Execution for an example of a full text output of a exam preview. These are the format specifications for each field:
+
+<Exam Name>: All characters must be in upper case and _ must be converted to white spaces.
+
+<Question Number>: This must be an integer and start from 1.
+
+<Question type>: First character must be capitalized e.g. Single.
+
+<Marks> : Must follow the question type and be enclosed in square brackets e.g.Single Answer[1]
+
+<Answer Options> : Must be present for single and multiple type of questions and must be displayed immediately after the question description.
+
+<Correct Answer>: Correct answers must be listed one whitespace immediately after the Expected answer:.
+
+The UML class diagram for your classExam should look like this after implementation:
+
+
+Here is an example of a possible Exam object could look like just so you can get an idea. In the above section for Question, we showed examples of 3 questions. We will denote these questions as question_1, question_2 and question_3respectively for the example below.
+
+Please keep in mind that not every exam will be exactly like this. The exam generated must be determined by several factors, including the command line arguments and the questions.
+
+name:        'INFO1110 TEST 1'
+duration:    60
+setup_dir:   '/home/test_bad_questions'
+shuffle:     True
+exam_status: True
+questions:   [q1, q2, q3]
+
+Your Task
+Complete class Questions and Exam to implement all the methods given in the specification. 
+
+Complete function extract_questions in setup.py which accepts a single parameter, an open file object in read mode, and returns a list of Question objects with each Question object representing a question that is extracted from the file questions.txt. The last element in the list must be of type end which indicates the end of the exam. You have to include this yourself as the file does not come with an end question. You may create additional helper functions to aid the parsing of the file contents. 
+
+You can assume that the contents of the file would always have these fields: Question - ,  Expected answer: and Marks:. Everything else may or may not appear in the file, and you are required to use the relevant methods in the Questions class to initialise objects using the content of these fields. 
+
+Question - <Type> 
+<Question Details>
+Possible Answers: 
+A. <Response>
+B. <Response>
+C. <Response>
+D. <Response>
+Expected Answer: <Correct Answer>
+Marks: <Marks>
+
+If a question has an invalid type, a Question object with None type with default attributes should be added to the list of Questions.
+
+You are not required to do any error handling here, as that should be done by the class methods in your Question class e.g checking the validity of answer options will be done by the set_answer_options method. 
+
+Following from above, make sure you use the methods from the Question class to set the attributes. As an example, for the marks, we do not assume it is an integer or a negative number. When we call set_marks, it will handle checking if its valid to set the attribute.
+
+Complete function parse_cmd_args in program_one.py, to parse the command line arguments to extract the information required by the program e.g. directory path to folder containing contents required by the program, exam duration and shuffle flag and return these as a tuple.  The function should return None if the function encounter exceptions while attempting to parse the arguments. The error message Check command line arguments should be displayed to terminal if the number of command line arguments passed to the program is insufficient. The error message Duration must be an integer must be displayed if the function expects an integer but a value receives is not an integer. 
+
+For this function, you are not required to do any checks on the directory or add any slashes / , you just return the directory as it is. Please have a look at #2238
+
+Complete function setup_exam in program_one.py which parses the required file provided in the Exam object and returns a tuple (exam_obj, status) where exam_obj is the updated exam object and status would be True if the exam is successfully setup. Otherwise, False. The function must call method set_questions and set_exam_status to update the Exam object during setup. 
+
+Implement function main in program_one.py to check if the files questions.txt and students.csv are present in the directory path received from command line argument. If the files are not found, the function displays the error message Missing files and terminates. If the files are found, the program should proceed to setup the exam by calling the function setup_exam with the correct argument. The program must notify users that it is attempting to setup the exam by displaying the message Setting up exam.... If the exam is not setup successfully, the program must notify users of the problem and display the message Error setting up exam before terminating. If it is successfully setup, the program notifies user that the Exam is ready... and gives users the option to preview the exam.
+
+Please do not modify the import setup statement in program_one.py , as it may cause you to fail some test cases.
+
+
+
+Program Execution
+The autograder will only start program_one.py. These are sample input/outputs of the program.
+
+Unsuccessful setup due to first question in /home/test_bad_questions/questions.txt is missing the Expected Answer field.
+
+$ python3 program_one.py /home/test_bad_questions 60
+Setting up exam...
+Description or correct answer missing
+Error setting up exam
+Successful setup
+
+$ python3 program_one.py /home/info1110_test_1 60
+Setting up exam...
+Exam is ready...
+Do you want to preview the exam [Y|N]? #a
+Invalid command.
+Do you want to preview the exam [Y|N]? #y
+INFO1110 TEST 1
+Question 1 - Single Answer[1]
+Which of the following Python statements will display this message in the terminal?
+*********************************
+Terminal output:
+<Start>I love INFO1110<End>
+*********************************
+A. print("I love INFO1110")
+B. print("I" "love" "INFO1110")
+C. print("I love" "INFO1110")
+D. print(I love INFO1110)
+Expected Answer: A
+
+Question 2 - Multiple Answers[2]
+Select all the animals that are mammals:
+A. whale
+B. dog
+C. fish
+D. frog
+Expected Answer: A, B
+
+Question 3 - Short Answer[1]
+This question is based on the program below:
+*********************************
+# Start 
+name = input("What's your name?: ")
+# End
+*********************************
+After running the program, you have keyed in "Bob" followed by the Enter key.
+What is the value stored in variable name?
+Expected Answer: "Bob"
+
+-End-
+
+Do you want to preview the exam [Y|N]? #n

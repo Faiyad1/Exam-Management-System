@@ -1,0 +1,398 @@
+2. Assign exam to candidates
+How do we get candidates?
+The candidates taking the exam must be loaded into the program before anyone can do the exam. This list of candidates must be placed in a specially formatted csv file, see Exam Program - File Formats - students.csv, to be read by the program. If the program does not find any candidates in the file, the program warns administrators of this problem with the error message No candidates found in the file and terminates. If the program is successful in parsing the list of candidates from the csv file, the program proceeds to assign an exam to each candidate. If the shuffle mode is activated, the possible answers for multiple choice questions will be shuffled and the exam for each candidate will vary depending on the results of shuffling. Once this stage is complete, administrators can opt to preview the exam for a selected candidate, all candidates or proceed to the next stage.
+
+The exam preview for each candidate should be formatted as follows. These <field> should be updated with the candidates details.
+
+Candidate: <Candidate name>(<Candidate SID>)
+Exam duration: <total duration> minutes
+You have <total duration> minutes to complete the exam.
+<Exam Name> 
+Question 1 - <Question Type> Answer[<Marks>]
+<Question description>
+[Optional] <Answer Options>
+Response for Question 1: 
+
+Question n - <Question Type> Answer[<Marks>]
+<Question description>
+[Optional] <Answer Options>
+Response for Question n: 
+
+-End-
+
+
+
+Let's begin to code...
+You will need to implement class Candidate to represent the details of an exam candidate.  This class must be written in candidate.py. A Candidate object must have the following attributes:
+
+name: A string representing the full name of the candidate when they register for the exam.
+
+sid: A string representing student identification number.
+
+extra_time: An integer representing additional time (in minutes) granted to the student.
+
+exam: An Exam object representing the details of the exam that the candidate will be doing on Exam Day.
+
+confirm_details: A Boolean value denoting whether the candidate passes (True) of fails (False) the verification check on exam day.
+
+results: A list representing the marks for each question that the candidate have achieved.
+
+A Candidate object will have the following methods to allow candidates to complete the exam and administrator to save the result of their exam attempt.
+
+__init__: A constructor which accepts three arguments representing the values related to the candidate's student identification number, registered full name and extra time adjustments if any. Candidates can have no exam object assigned to them upon initialization.
+
+get_duration: The method calculates candidate's exam duration after factoring in the original exam duration and the extra time awarded.
+
+edit_sid: The method updates the candidate student identification number if the argument is a valid identification number. A valid identification number is a string representation of a positive integer with 9 numbers.
+
+edit_extra_time: Update the instance variable extra_time if the argument is an integer that is more than or equals to 0.
+
+set_confirm_details: Update the attribute confirm_details to True if the arguments received matches the candidate details.
+
+set_results: Update the attribute results if the candidate has passed the verification check and the number of marks in the list correspond to the number of questions in the exam (excluding end question).
+
+do_exam: The method displays the candidate's details followed by each question of the exam as it would appear on the exam day itself.
+
+The UML class diagram for your classCandidate should look like this after implementation:
+
+
+See Section 3. Administer exam and auto-marking for details on the log_attempt method.
+
+Here is an example Candidate object so you can get an idea of what one would look like. This candidate has completed the exam (that's why confirm_details are Trueas they completed the verification check. For results, they did not fully ace the exam, but got some marks). We will denote the example exam object in Section 1. Setup the exam as exam_1 for below.
+
+name:            'Robert Pattinson'
+sid:             '123456789'
+extra_time:      37
+exam:            exam_1
+confirm_details: True
+results:         [0, 1, 1]    
+
+Your Task
+Complete class Candidate to implement all the methods given in the specification.
+
+Write function sort in setup.py which has two parameters, a list and and integer. The list contains a list of items to be sorted. The parameter order represents the order of sorting: 
+
+0 : no sort, returns a new list of the original data
+
+1 : sort in ascending order, returns a new list of the original data sorted in ascending order i.e. small to big
+
+2 : sort in descending order, returns a new list of the original data sorted in descending order i.e. big to small. 
+
+Your must write your own sorting function and are not allowed to use the built-in functions or methods to accomplish this. If the first argument is invalid, the function returns an empty list. If order is not between 0 and 2, the function returns a new list of the original data.
+
+Complete function extract_students in setup.py which accepts a single parameter, an open file object in read mode, and returns a list of unique Candidate objects that is sorted in ascending order based on the SID. If the argument is invalid, the function should return an empty list. The function should parse the file contents from students.csv to extract each student's details, sort the students in ascending order based on their student identification number (SID) and then create Candidate objects to represent the student during the exam. 
+
+Complete function assign_exam in program_two.py which has one parameter of type Exam and returns a list of Candidate objects or None. Each candidate object must have an Exam object assigned to the instance variable exam. If the shuffle mode is True for the exam, this Exam object may or may not be different to other candidates in the exam depending on the result of randomization. The function must call extract_students to extract the list of candidates from students.csv that is found in setup directory. If the function is unsuccessful in accomplishing this, the function should display the message No candidates found in the file and return None. Otherwise, it should proceed to assign exam to each unique candidate extracted from the file. The function informs users that it is doing this step by displaying the message Assigning exam to candidates... and indicates the end of the process by displaying the message Complete. Exam allocated to {n} candidates. where n is the total number of candidates in the exam. 
+
+Hint: If randomisation occurs with the exams, then each students exam will be different. Having the same exam object assigned to every student will not be a good idea, as shuffling will end up shuffling for everyone. Hence, there's a few steps you'll need to do. For each student, you'll need to:
+1. For each question in the exam, make a new question with the same details.
+2. Use these list of newly made question objects to make a new exam object.
+3. Assign this new exam to the student.
+
+We've provided you a scaffold to do this which requires adding a copy_question instance method in Question and a copy_exam instance method in Exam. If you do this correctly, given an exam object, you can make a new exam for a student by simply calling exam.copy_exam() without issues of exam details conflicting across multiple students.
+
+123456789101112131415
+class Exam:    
+    # have all methods here such as init, setters, etc...
+    # ...
+    # ...
+
+    def copy_exam(self):
+        '''
+        Create a new exam object using the values of this instances' values.
+        '''
+        # TODO: make a new exam object (call the constructor)
+        new_exam = # (replace this comment with code)
+
+        # make a new list of questions to reassign to the attribute
+        new_questions = []
+        i = 0
+        while i < len(self.questions):
+            original_question = self.questions[i]
+            # call the copy method for this question
+            # TODO: (you'll need to write this instance method in Question)
+            new_question = original_question.copy_question()
+
+            # insert this into new list of questions
+            new_questions.append(new_question)
+            i += 1
+
+        # TODO: assign this new question list to the new exam
+        # (replace this comment with code)
+
+        # return the new exam
+        return new_exam
+
+The last step is that you'll need to modify function main in program_two.py to call function assign_exam if the first stage of the process (that is, program_one) is successfully completed. If the function assign_exam is successfully executed, the program should proceed to allow administrators to do the following inputs:
+
+1. Preview a selected candidate's exam given the candidate's SID.
+2. Preview all the exam for all candidates in the exam using -a. 
+3. Quit the preview feature using -q.
+
+The program prompts the user with the following message Enter SID to preview student's exam (-q to quit):. If the user enters a valid SID number but the number is not found in the exam's list of candidates, the program displays the message SID not found in list of candidates.and re-prompts for another input. If an invalid SID number is entered, the program displays the message SID is invalid. and re-prompts for another input again.
+
+Hint: Given you implemented the main function of program_one correctly, your first line in main for program_two could be program_one.main(args) (ensure you check the log of changes as the main now takes in the args). You can change the main in program_one to return anything you want to help you with the main in program_two.
+
+Program Execution
+The autograder will only start program_two.py. These are sample input/outputs of the program after implementing the first and second stage of the process and the administrator decides to preview all the exam for all candidates:
+
+ $ python3 program_two.py /home/info1110_test_1 69 -r
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-a
+ ​
+ Candidate: Damian Carroll(500010347)
+ Exam duration: 69 minutes
+ You have 69 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I" "love" "INFO1110")
+ B. print("I love" "INFO1110")
+ C. print(I love INFO1110)
+ D. print("I love INFO1110")
+ Response for Question 1: 
+ ​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. fish
+ B. whale
+ C. dog
+ D. frog
+ Response for Question 2: 
+ 
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+​
+ -End-
+​
+​
+ Candidate: Todd Werner(500498361)
+ Exam duration: 69 minutes
+ You have 69 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I love" "INFO1110")
+ B. print(I love INFO1110)
+ C. print("I love INFO1110")
+ D. print("I" "love" "INFO1110")
+ Response for Question 1: 
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. dog
+ B. frog
+ C. fish
+ D. whale
+ Response for Question 2: 
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+​
+ -End-
+​
+​
+ Candidate: Morgan Valencia(500594412)
+ Exam duration: 79 minutes
+ You have 79 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I" "love" "INFO1110")
+ B. print(I love INFO1110)
+ C. print("I love INFO1110")
+ D. print("I love" "INFO1110")
+ Response for Question 1: 
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Response for Question 2: 
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+​
+ -End-
+​
+​
+ Candidate: Tom Goldfinch(500622656)
+ Exam duration: 69 minutes
+ You have 69 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I love" "INFO1110")
+ B. print(I love INFO1110)
+ C. print("I" "love" "INFO1110")
+ D. print("I love INFO1110")
+ Response for Question 1: 
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Response for Question 2: 
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+​
+ -End-
+​
+​
+ Candidate: Lisbeth Todd(500685031)
+ Exam duration: 69 minutes
+ You have 69 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I" "love" "INFO1110")
+ B. print("I love" "INFO1110")
+ C. print(I love INFO1110)
+ D. print("I love INFO1110")
+ Response for Question 1: 
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. frog
+ B. dog
+ C. whale
+ D. fish
+ Response for Question 2: 
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+​
+ -End-
+​
+ Enter SID to preview student's exam (-q to quit): #-q
+
+Peview for a single candidate:
+
+ $ python3 program_two.py /home/info1110_test_1 69 -r
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #500010347
+​
+ Candidate: Damian Carroll(500010347)
+ Exam duration: 69 minutes
+ You have 69 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I" "love" "INFO1110")
+ B. print("I love" "INFO1110")
+ C. print(I love INFO1110)
+ D. print("I love INFO1110")
+ Response for Question 1: 
+ ​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. fish
+ B. whale
+ C. dog
+ D. frog
+ Response for Question 2: 
+ ​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start 
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: 
+ ​
+ -End-
+
+Enter SID to preview student's exam (-q to quit): #-q
+
+Incorrect input:
+
+ $ python3 program_two.py /home/info1110_test_1 69 -r
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-s
+ SID not found in list of candidates.
+
+ Enter SID to preview student's exam (-q to quit): #-q

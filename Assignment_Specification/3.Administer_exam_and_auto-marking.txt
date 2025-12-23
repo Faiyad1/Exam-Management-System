@@ -1,0 +1,214 @@
+3. Administer exam and auto-marking
+Finishing our Program...
+In the final stage of the process, candidates follow the prompts given by the program to complete their exam. The program starts by asking candidates to enter their student identification number to start the exam. If they respond with an invalid SID for three attempts, the program directs candidates to Contact exam administrator. and terminates. If a valid SID is given but the candidate is not listed as a candidate for the exam, the program ask users if they want to attempt entering their identification number again. If they fail to enter the exam after three attempts, the program directs candidates to Contact exam adminsitrator. and terminates. If the SID is valid and the candidate is officially assigned to the exam, the program proceeds to verify their identity by asking the candidate to provide their full name. If the name matches the name given in the students.csv file for the exam, the program proceeds to display each question of the exam and prompt users for their answer. 
+
+All candidates are given one attempt to do the exam and the exam must be completed in one sitting. Candidates are not allowed to modify their answers after submitting their response for each question. The auto-marker will proceed to grade the response. The program saves a copy of the student's responses as a text file for audit purposes. 
+
+
+Your Task
+Update class Question to add method mark_response which accepts one argument representing the response given by candidate and returns the marks awarded for this response. For questions of type multiple, partial marks should be awarded if students get any of the answers correct. The marks should be evenly distributed between each correct answer. For example, if a question is worth 2 marks and the expected answer is B and D but the student's response is B and C, a total of 1 mark should be awarded to the student. (We are aware this is not how the real world works, but it keeps things simple for implementation, we should not be worrying about marking formulas for this course. So as example, if a student was to answer every option, they would get 2 marks, despite them not knowing what's actually correct, do not do this in your final exam students!😄). If the question is an end question, prematurely return None (the default value).  The mark should be rounded to 2dp.
+
+Design testcases to verify that the method mark_responseis implemented correctly for each type of question. Write your answers in test_plan.md. You must have at least 2 testcases (a positive and a negative) for each type of question (multiple, short, single, don't bother with end).  Hence, a minimum total of 6 testcases. Then, implement the test cases in test_program.py. Write instructions as docstring at the top of file to explain how to run the test program and interpret its results. This question requires contents from Week 10. 
+
+Implement the method log_attempt in candidate.py to enable the responses submitted by the candidate during the exam to be written to a file that is labelled with the candidates SID. 
+
+Modify method do_exam in candidate.py to have a single default parameter preview of type bool. If preview is set to True, the method displays the contents of the exam but does not accept any inputs from the user. In short, the behaviour can be used by administrators to preview the exam from the candidate's point of view in Section 2. Assign exam to candidates. If it is set to False, the method will wait for user's to provide a response to the question. If the question is of type single, the method must check that responses is a valid answer option e.g. A, B, C, or D (it cannot be A, B as an example). If the question is of type multiple, the method must check responses is a valid answer option or a collection of it e.g. A, B, C, D, A, B, A, B, D, etc. Once a response is received, the method must call mark_response to determine the marks that should be awarded based on the candidate's response. If the answer is invalid, the student automatically gets 0 for that question. At the very end, it will then save the details of the question, response and marks to the candidate's file by calling log_attempt. 
+
+Modify function main in program_final.py, to prompt candidates with instructions to enter their student identification number to start the exam. If the response provided by user is not a valid SID number, the program displays the message Invalid SID. and re-prompts for another input. 
+
+If the number is a valid SID number but the number is not found in the candidate list, the program displays the message Candidate number not found for exam. and prompt users Do you want to try again [Y|N]?. If the response is not y or n, the program displays the message Response must be [Y|N]. and re-prompts candidates for their decision to try again (note that this does not contribute to the three attempts, there will be an example below). If the user responds with n or N, the program stops asking for input. If the user responds with y or Y, the program prompts to Enter the student identification number (SID) to start exam: and waits for a new SID to be entered by the user. If they made THREE mistakes during this stage, the program displays the message Contact exam administrator.
+
+If the number is a valid SID and the number is found in the candidate list, the program proceeds to inform users Verifying candidate details... and proceeds to prompt Enter your full name as given during registration of exam:. The program checks if the combination of SID and name (case insensitive) given by the user matches the candidate records. If it does not match the records, the program informs that Name does not match records. and re-prompts user to enter their full name again. The program tracks invalid attempts by the users. If they made THREE mistakes during the verification stage, the program locks the user out by displaying Contact exam administrator to verify documents. and terminates.
+
+If it matches the records, the program proceeds to with administer the exam with the message Start exam... and proceeds to show each question in the exam to the user by calling the method do_exam.
+
+Ensure you have a main function that has a parameter named args.
+
+Similarly to program_two using main of program_one in the first line, if done correctly, the first line of program_final should be calling program_two's main function with whatever return value you wish for it to have. This is only a suggestion, you are free to do what you want.
+
+
+Program Execution
+The autograder will only start program_final.py. These are sample input/outputs of the program after implementing the all stages of the process and the administrator decides to preview all the exam for all candidates:
+
+Incorrect SID on all tries.
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #abcd1234
+ Invalid SID.
+ Enter your student identification number (SID) to start exam: #1234567
+ Invalid SID.
+ Enter your student identification number (SID) to start exam: #12345678
+ Invalid SID.
+ Contact exam administrator.
+
+Valid SID but not in records for all tries. 
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #500594411
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #y
+ Enter your student identification number (SID) to start exam: #500594413
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #y
+ Enter your student identification number (SID) to start exam: #500594414
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #y
+ Contact exam administrator.
+
+Incorrect SID, invalid response, then valid SID but not in records. However, we fail the try again prompt multiple times.
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #500594411
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #y
+ Enter your student identification number (SID) to start exam: #1234567
+ Invalid SID.
+ Enter your student identification number (SID) to start exam: #500594414
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #nope
+ Response must be [Y|N].
+ Do you want to try again [Y|N]? #nope
+ Response must be [Y|N].
+ Do you want to try again [Y|N]? #nope
+ Response must be [Y|N].
+ Do you want to try again [Y|N]? #y
+ Contact exam administrator.
+
+Valid SID but not in records, followed by not wanting to try again.
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #500594411
+ Candidate number not found for exam.
+ Do you want to try again [Y|N]? #n
+
+Correct SID and candidate in list but different name from records,
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates.
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #500594412
+ Verifying candidate details...
+ Enter your full name as given during registration of exam: #john smith
+ Name does not match records.
+ Enter your full name as given during registration of exam: #jane smith
+ Name does not match records.
+ Enter your full name as given during registration of exam: #tom smith
+ Contact exam administrator to verify documents.
+
+Correct SID and name. Successful completion of exam.
+
+ $ python3 program.py /home/info1110_test_1 60
+ Setting up exam...
+ Exam is ready...
+ Do you want to preview the exam [Y|N]? #n
+ Assigning exam to candidates...
+ Complete. Exam allocated to 5 candidates. 
+ Enter SID to preview student's exam (-q to quit): #-q
+ Enter your student identification number (SID) to start exam: #500594412                                    
+ Verifying candidate details...
+ Enter your full name as given during registration of exam: #Morgan valencia
+ Start exam....
+ ​
+ Candidate: Morgan Valencia(500594412)
+ Exam duration: 70 minutes
+ You have 70 minutes to complete the exam.
+ INFO1110 TEST 1
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I love INFO1110")
+ B. print("I" "love" "INFO1110")
+ C. print("I love" "INFO1110")
+ D. print(I love INFO1110)
+ Response for Question 1: #A
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Response for Question 2: #A, B
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: #Bob
+​
+ -End-
+
+This is the text stored in the student's file 500594412.txt which is found in /home/info1110_test_1/submissions.
+
+ Question 1 - Single Answer[1]
+ Which of the following Python statements will display this message in the terminal?
+ *********************************
+ Terminal output:
+ <Start>I love INFO1110<End>
+ *********************************
+ A. print("I love INFO1110")
+ B. print("I" "love" "INFO1110")
+ C. print("I love" "INFO1110")
+ D. print(I love INFO1110)
+ Response for Question 1: A
+ Expected Answer: A
+ You have scored 1.00 mark.
+​
+ Question 2 - Multiple Answers[2]
+ Select all the animals that are mammals:
+ A. whale
+ B. dog
+ C. fish
+ D. frog
+ Response for Question 2: A, B
+ Expected Answer: A, B
+ You have scored 2.00 marks.
+​
+ Question 3 - Short Answer[1]
+ This question is based on the program below:
+ *********************************
+ # Start
+ name = input("What's your name?: ")
+ # End
+ *********************************
+ After running the program, you have keyed in "Bob" followed by the Enter key.
+ What is the value stored in variable name?
+ Response for Question 3: BOb
+ Expected Answer: "Bob"
+ You have scored 0.00 marks.
