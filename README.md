@@ -119,18 +119,19 @@ SID,Name,Extra Time
 ## Project Structure
 
 ```
-├── question.py           # Question class with different types
-├── exam.py               # Exam class for managing exams
-├── candidate.py          # Candidate class for exam takers
-├── setup.py              # File parsing and sorting helpers
-├── program_one.py        # Setup and preview
-├── program_two.py        # Candidate assignment
-├── program_final.py      # Full exam workflow
-├── info1110_test_1/      # Valid sample exam data
-├── info1110_invalid_test/# Invalid sample data for error handling
-├── samples/              # Example question formats
-├── test_plan.md          # Test plan documentation
-└── test_program.py       # Manual tests for Question.mark_response
+├── question.py               # Question class with different types
+├── exam.py                   # Exam class for managing exams
+├── candidate.py              # Candidate class for exam takers
+├── setup.py                  # File parsing and sorting helpers
+├── program_one.py            # Setup and preview
+├── program_two.py            # Candidate assignment
+├── program_final.py          # Full exam workflow
+├── info1110_test_1/          # Valid sample exam data
+├── info1110_invalid_test/    # Invalid sample data for error handling
+├── samples/                  # Example question formats
+├── test_plan.md              # Test plan documentation
+├── test_program.py           # Manual tests for Question.mark_response
+└── README.md
 ```
 
 ## Notes
