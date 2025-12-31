@@ -14,6 +14,7 @@ A text-based exam system for setting up exams, assigning them to candidates, and
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
+- [Workflow](#workflow)
 - [Output](#output)
 - [Tests](#tests)
 - [Programs](#programs)
@@ -23,14 +24,14 @@ A text-based exam system for setting up exams, assigning them to candidates, and
 
 ## Features
 
-- Support for multiple question types:
-  - **Single choice** - One correct answer from four options
-  - **Multiple choice** - Multiple correct answers from four options
-  - **Short answer** - Free-form text responses
-- Candidate management with SID verification
-- Answer shuffling for randomized exams
-- Automatic grading and mark calculation
-- Exam submission logging
+- **Versatile Question Types:**
+  - *Single Choice:* Standard multiple-choice (one correct answer).
+  - *Multiple Choice:* Select all that apply.
+  - *Short Answer:* Text-based input.
+- **Candidate Verification:** Secure login using Student IDs (SID) validated against a class roster.
+- **Randomization:** Optional shuffling of answer choices to prevent copying.
+- **Auto-Grading:** Immediate marking and score calculation upon completion.
+- **Audit Logging:** All exam attempts and answers are logged to individual submission files.
 
 ## Requirements
 
@@ -49,16 +50,53 @@ For custom exams, create a directory with `questions.txt` and `students.csv`.
 
 ## Usage
 
+The system is split into three programs representing different stages of the exam administration process.
+
+### 1. Setup & Preview
+**Script:** `program_one.py`
+
+Parses the exam questions and allows an administrator to check if they are loaded correctly.
+
 ```bash
-python program_one.py info1110_test_1 60
-python program_two.py info1110_test_1 69 -r
-python program_final.py info1110_test_1 70
+python program_one.py <exam_dir> <duration_minutes> [-r]
+```
+- `-r`: (Optional) Enable randomized answer shuffling.
+
+**Example:**
+```bash
+python program_one.py info1110_test_1 60 -r
 ```
 
-Interactive preview controls in `program_two.py`:
-- Enter a 9-digit SID to preview one candidate
-- `-a` to preview all candidates
-- `-q` to quit preview mode
+### 2. Assign & View
+**Script:** `program_two.py`
+
+Assigns the exam instance to candidates loaded from `students.csv`. Allows previewing the exam exactly as a specific student would see it.
+
+```bash
+python program_two.py <exam_dir> <duration_minutes> [-r]
+```
+
+**Interactive Controls:**
+- Enter a **9-digit SID** to preview that student's specific exam paper.
+- Enter `-a` to list all assigned candidates.
+- Enter `-q` to quit and finish assignment.
+
+### 3. Run Exam
+**Script:** `program_final.py`
+
+The final application used by students to take the exam. It combines setup, assignment, and execution.
+
+```bash
+python program_final.py <exam_dir> <duration_minutes> [-r]
+```
+
+## Workflow:
+
+1. Administrator launches the script.
+2. System loads exam and candidates.
+3. **Important:** Administrator must enter `-q` to exit the preview mode and switch to "Exam Mode".
+4. Students enter their SID to log in and take the exam.
+5. Results are saved to `<exam_dir>/submissions/<SID>.txt`.
 
 ## Output
 
@@ -73,12 +111,6 @@ python test_program.py
 ```
 
 Compare the output against the expected results in `test_plan.md`.
-
-## Programs
-
-- `program_one.py <exam_dir> <duration_minutes> [-r]` - Setup and optional exam preview.
-- `program_two.py <exam_dir> <duration_minutes> [-r]` - Assign the exam and preview candidate views.
-- `program_final.py <exam_dir> <duration_minutes> [-r]` - Full workflow, verifies candidates, runs the exam, writes submissions.
 
 ## File Formats
 
