@@ -90,7 +90,7 @@ The final application used by students to take the exam. It combines setup, assi
 python program_final.py <exam_dir> <duration_minutes> [-r]
 ```
 
-## Workflow:
+## Workflow
 
 1. Administrator launches the script.
 2. System loads exam and candidates.
